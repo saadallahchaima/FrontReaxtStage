@@ -11,42 +11,57 @@ const SignIn: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
     setLoading(true);
-
+  
+    console.log('Form submission started');
+  
     try {
       const response = await fetch('http://localhost:8080/api/v1/auth/authenticate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        toast.success('Login successful');
-
-        // Save token or user data if needed
-        localStorage.setItem('token', data.token);
-
-        // Redirect to dashboard after showing the success toast
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 2000); // 2-second delay before redirecting
-
-      } else {
-        throw new Error('Authentication failed');
+  
+      console.log('Response received:', response);
+  
+      const responseText = await response.text(); // Read response as text
+      console.log('Response text:', responseText);
+  
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Error parsing JSON:', e);
+        throw new Error('Invalid response format');
       }
+  
+      console.log('Authentication successful:', data);
+  
+      toast.success('Login successful');
+  
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      console.log('Access Token:', localStorage.getItem('access_token'));
+      console.log('Refresh Token:', localStorage.getItem('refresh_token'));
+     
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+  
     } catch (error) {
+      console.error('Error during login:', error);
       toast.error('Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
+
+  
 
   return (
     <>
@@ -323,9 +338,10 @@ const SignIn: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Don’t have any account?{' '}
-                    <Link to="/auth/signup" className="text-primary">
-                      Sign Up
-                    </Link>
+                 <Link to="/auth/signup" className="text-primary">
+  Sign Up
+</Link>
+
                   </p>
                 </div>
               </form>

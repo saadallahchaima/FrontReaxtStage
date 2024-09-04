@@ -1,9 +1,29 @@
+import { useEffect, useState } from 'react';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import CoverOne from '../images/cover/cover-01.png';
 import userSix from '../images/user/user-06.png';
 import { Link } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { TokenPayload } from '../App';
 
 const Profile = () => {
+  const [userInfo, setUserInfo] = useState<TokenPayload | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem('access_token'); // Retrieve token from localStorage
+    if (token) {
+      try {
+        const decoded = jwtDecode<TokenPayload>(token); // Decode token
+        console.log('Decoded Token:', decoded); // Vérifiez la structure du jeton
+        setUserInfo(decoded); // Store the decoded user information
+      } catch (error) {
+        console.error('Invalid token:', error);
+        // Handle the invalid token case, e.g., redirect to login or clear token
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        window.location.href = '/';
+      }
+    }
+  }, []);
   return (
     <>
       <Breadcrumb pageName="Profile" />
@@ -86,11 +106,13 @@ const Profile = () => {
               </label>
             </div>
           </div>
+         
           <div className="mt-4">
-            <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-              Danish Heilium
-            </h3>
-            <p className="font-medium">Ui/Ux Designer</p>
+          {userInfo && (
+            <><h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
+                {userInfo.firstName || 'User'}
+              </h3><p className="font-medium">{userInfo.email || 'Email'}</p></>
+            )}
             <div className="mx-auto mt-4.5 mb-5.5 grid max-w-94 grid-cols-3 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
               <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
                 <span className="font-semibold text-black dark:text-white">

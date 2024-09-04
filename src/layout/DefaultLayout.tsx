@@ -3,11 +3,11 @@ import Header from '../components/Header/index';
 import Sidebar from '../components/Sidebar/index';
 
 const DefaultLayout: React.FC<{ children: ReactNode; hideSidebar?: boolean; hideSearch?: boolean }> = ({ children, hideSidebar = false, hideSearch = false }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   return (
-    <div className="dark:bg-boxdark-2 dark:text-bodydark">
-      <div className="flex h-screen overflow-hidden">
+    <div className="dark:bg-boxdark-2 dark:text-bodydark min-h-screen">
+      <div className="flex h-full overflow-hidden">
         {!hideSidebar && (
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         )}
@@ -15,7 +15,7 @@ const DefaultLayout: React.FC<{ children: ReactNode; hideSidebar?: boolean; hide
           {!hideSearch && (
             <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           )}
-          <main>
+          <main className="flex-1">
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               {children}
             </div>

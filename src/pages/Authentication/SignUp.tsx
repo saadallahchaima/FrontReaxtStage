@@ -56,7 +56,7 @@ const SignUp: React.FC = () => {
 
       await new Promise(resolve => setTimeout(resolve, 3000)); 
 
-      navigate('/auth/signin');
+      navigate('/');
       
     } catch (error) {
       toast.error("Une erreur s'est produite lors de l'inscription");
