@@ -39,10 +39,16 @@ function App() {
   const navigate = useNavigate();
   useEffect(() => {
     const checkAuth = async () => {
+      // Skip token check if user is on the signup page
+      if (pathname === '/auth/signup') {
+        setLoading(false);
+        return;
+      }
+   
       const { accessToken, refreshToken } = getStoredTokens();
       console.log('Stored accessToken:', accessToken);
       console.log('Stored refreshToken:', refreshToken);
-  
+   
       if (accessToken) {
         try {
           const decodedUser = jwtDecode<TokenPayload>(accessToken);
@@ -86,10 +92,9 @@ function App() {
       }
       setLoading(false);
     };
-  
+   
     checkAuth();
   }, [navigate, pathname]);
-  
   return (
     <>
       {loading ? (
